@@ -511,9 +511,7 @@ def main():
     )
 
     for step in range(total_steps):
-        model_engine.zero_grad(
-            set_to_none=True
-        )
+        model_engine.zero_grad()
 
         dist.barrier()
         torch.cuda.synchronize()
