@@ -370,10 +370,14 @@ def main():
     )
 
     # After TP sharding, p.numel() reflects the local DTensor shard.
-    local_param_count = sum(
-        p.numel()
-        for p in model.parameters()
-    )
+
+    local_param_count = 0
+
+for p in model.parameters():
+    if hasattr(p, "to_local"):
+        local_param_count += p.to_local().numel()
+    else:
+        local_param_count += p.numel()
 
     optimizer = torch.optim.SGD(
         model.parameters(),
