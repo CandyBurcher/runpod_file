@@ -91,41 +91,41 @@ class SmallGPT(nn.Module):
         # Weight tying
         self.lm_head.weight = self.token_embedding.weight
 
-def forward(self, input_ids):
-    batch_size, seq_len = input_ids.shape
-
-    positions = torch.arange(
-        seq_len,
-        device=input_ids.device,
-    ).unsqueeze(0)
-
-    x = (
-        self.token_embedding(input_ids)
-        + self.position_embedding(positions)
-    )
-
-    # Causal mask:
-    # True = this position is NOT allowed to attend
-    causal_mask = torch.triu(
-        torch.ones(
-            seq_len,
+    def forward(self, input_ids):
+        batch_size, seq_len = input_ids.shape
+    
+        positions = torch.arange(
             seq_len,
             device=input_ids.device,
-            dtype=torch.bool,
-        ),
-        diagonal=1,
-    )
-
-    for block in self.blocks:
-        x = block(
-            x,
-            attn_mask=causal_mask,
+        ).unsqueeze(0)
+    
+        x = (
+            self.token_embedding(input_ids)
+            + self.position_embedding(positions)
         )
-
-    x = self.ln_f(x)
-    logits = self.lm_head(x)
-
-    return logits
+    
+        # Causal mask:
+        # True = this position is NOT allowed to attend
+        causal_mask = torch.triu(
+            torch.ones(
+                seq_len,
+                seq_len,
+                device=input_ids.device,
+                dtype=torch.bool,
+            ),
+            diagonal=1,
+        )
+    
+        for block in self.blocks:
+            x = block(
+                x,
+                attn_mask=causal_mask,
+            )
+    
+        x = self.ln_f(x)
+        logits = self.lm_head(x)
+    
+        return logits
 
 
 # ============================================================
