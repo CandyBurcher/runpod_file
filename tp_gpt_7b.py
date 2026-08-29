@@ -378,6 +378,7 @@ def main():
     optimizer = torch.optim.SGD(
         model.parameters(),
         lr=LR,
+        foreach=False,
     )
 
     # All TP ranks cooperate on the SAME micro-batch.
