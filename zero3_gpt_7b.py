@@ -296,6 +296,11 @@ def world_max(value, device):
 def main():
     parser = argparse.ArgumentParser()
 
+    parser.add_argument(
+        "--local_rank",
+        type=int,
+        default=-1,
+    )
 
     parser = deepspeed.add_config_arguments(
         parser
