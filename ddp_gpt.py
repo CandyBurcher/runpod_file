@@ -183,8 +183,8 @@ def main():
 
     batch_size = 2
 
-    warmup_steps = 5
-    train_steps = 20
+    warmup_steps = 10
+    train_steps = 100
 
     learning_rate = 3e-4
 
@@ -284,7 +284,18 @@ def main():
         end = time.perf_counter()
 
         step_time = end - start
-
+        step_time_tensor = torch.tensor(
+            step_time,
+            device=device,
+            dtype=torch.float64,
+        )
+        
+        dist.all_reduce(
+            step_time_tensor,
+            op=dist.ReduceOp.MAX,
+        )
+        
+        step_time = step_time_tensor.item()
         # ----------------------------------------------------
         # Metrics
         # ----------------------------------------------------
