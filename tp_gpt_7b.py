@@ -373,17 +373,17 @@ def main():
 
     local_param_count = 0
 
-for p in model.parameters():
-    if hasattr(p, "to_local"):
-        local_param_count += p.to_local().numel()
-    else:
-        local_param_count += p.numel()
-
-    optimizer = torch.optim.SGD(
-        model.parameters(),
-        lr=LR,
-        foreach=False,
-    )
+    for p in model.parameters():
+        if hasattr(p, "to_local"):
+            local_param_count += p.to_local().numel()
+        else:
+            local_param_count += p.numel()
+    
+        optimizer = torch.optim.SGD(
+            model.parameters(),
+            lr=LR,
+            foreach=False,
+        )
 
     # All TP ranks cooperate on the SAME micro-batch.
     torch.manual_seed(2026)
